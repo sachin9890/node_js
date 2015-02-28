@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script type="text/javascript" src="static/lib/jquery.min.1.7.js"></script>
+    <script type="text/javascript" src="static/lib/turn.js"></script>
+    <script type="text/javascript" src="static/js/app.js"></script>
+    <script type="text/javascript" src="static/lib/jscolor.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+</head>
+
+<body>
+    <div id="tool">
+        <span id="eraser">ERASE</span>
+        <span>
+            <input id="clr" type="button" class="color" value="144BFF">
+        </span>
+        <span id="first">FIRST</span>
+        <span id="prev">PREV</span>
+        <span id="next">NEXT</span>
+        <span id="last">LAST</span>
+    </div>
+    <div id="container">
+        <div id="flipbook">
+            <canvas class="hard">Turn.js</canvas>
+            <canvas class="hard"></canvas>
+            <canvas id="page1">Page 1</canvas>
+            <canvas id="page2">Page 2</canvas>
+            <canvas id="page3">Page 3</canvas>
+            <canvas id="page4">Page 4</canvas>
+            <canvas id="page5">Page 5</canvas>
+            <canvas id="page6">Page 6</canvas>
+            <canvas id="page7">Page 7</canvas>
+            <canvas id="page8">Page 8</canvas>
+        </div>
+    </div>
+</body>
+
+</html>
