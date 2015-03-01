@@ -1,10 +1,10 @@
 var express = require('express');
-var fs = require('fs');
-var path = require('path');
-var url = require('url');
-var bodyParser = require('body-parser')
+//var fs = require('fs');
+//var path = require('path');
+//var url = require('url');
+//var bodyParser = require('body-parser')
 var app = express();
-app.use(bodyParser());
+//app.use(bodyParser());
 
 
 var server = app.listen(3000);
