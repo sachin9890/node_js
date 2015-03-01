@@ -6,32 +6,23 @@ $(function() {
     var color = "blue";
     var mouseData = {};
     var pgnum = 3;
-    var opt = {
-        host: "192.168.0.109",
-        hostname: "192.168.0.109",
-        path: "../socket.io",
-        port: "3000",
-        secure: false
-    }
-    var socket = io.connect('http://192.168.0.109:3000/');
+
+    var socket = io.connect();
     var last;
     var last_flag = false;
     var flip_book = $("#flipbook");
-    console.log(socket);
+   
 
     flip_book.turn({
-        width: w - (w/10),
-        height: h - (h/8),
+        width: w - (w / 10),
+        height: h - (h / 8),
         autoCenter: true,
         when: {
             turned: function(event, page, pageObj) {
-                //$('canvas').off('mousedown');
                 var canvases = document.getElementsByTagName('canvas')
                 for (var i = 0; i < canvases.length; i++) {
                     canvases[i].addEventListener('mousedown', mouse_down);
                 }
-                // $("canvas").attr("width", C_width);
-                //$("canvas").attr("height", C_height);
             }
         }
     });
@@ -45,11 +36,6 @@ $(function() {
     });
 
     flip_book.turn("disable", true);
-
-    $("canvas").attr({
-        width: $("#page2").width(),
-        height: $("#page2").height()
-    });
 
     C_width = $("#page2").width();
     C_height = $("#page2").height();
@@ -65,36 +51,56 @@ $(function() {
         });
         flip_book.turn("addPage", element, $("#flipbook").turn("pages") + 1);
         flip_book.turn("next");
-        $("canvas").attr("width", C_width);
-        $("canvas").attr("height", C_height);
         flip_book.turn("disable", true);
     }
 
 
     function mouse_down(e) {
-        console.log(e.layerX);
+        
+        if(!$(this).attr('width'))
+           {
+                $(this).attr("width", C_width);
+                $(this).attr("height", C_height);
+            }
+        
         if (mouseData.eraser_flag) {
             mouseData = {
                 mouse_x: e.layerX,
                 mouse_y: e.layerY,
                 target: e.target.id,
                 eraser_flag: true,
+                
             }
-        } else {
+        }
+        else {
             mouseData = {
                 mouse_x: e.layerX,
                 mouse_y: e.layerY,
                 target: e.target.id,
-                eraser_flag: false
+                eraser_flag: false,
+                
             }
         }
 
+       canvas = document.getElementById(mouseData.target);
+        ctx = canvas.getContext('2d');
+        ctx.font = "30px Arial";
+        ctx.fillText("Draw", 50, 80);
+        if (mouseData.eraser_flag) {
 
-        console.log(mouseData);
+        }
+        else {
+            ctx.beginPath();
+            ctx.moveTo(mouseData.mouse_x, mouseData.mouse_y);
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = color;
+        }
 
         socket.emit('sendData', mouseData);
-        canvas = document.getElementById(mouseData.target);
         canvas.addEventListener('mousemove', function(e) {
+            data=mouseData;
             var mousePos = {
                 'x': e.layerX,
                 'y': e.layerY
@@ -114,11 +120,11 @@ $(function() {
         if (mouseData.eraser_flag) {
             ctx.clearRect(data.mouse_x, data.mouse_y, 32, 32);
             socket.emit('Draw', data);
-        } else {
-            console.log("mouse move");
-            console.log(data.mouse_x)
+        }
+        else {
             ctx.lineTo(data.mouse_x, data.mouse_y);
             ctx.stroke();
+            ctx.save();
             socket.emit('Draw', data);
         }
 
@@ -160,7 +166,7 @@ $(function() {
         flip_book.turn("disable", true);
     });
 
-     $("#pen").on('click', function() {
+    $("#pen").on('click', function() {
         mouseData.eraser_flag = false;
         $('canvas').removeClass('eraser');
         $('canvas').addClass('pen');
@@ -185,14 +191,12 @@ $(function() {
         mouseData.eraser_flag = _erdata.eraser_flag;
         $('canvas').removeClass('eraser');
         $('canvas').addClass('pen');
-        console.log("pen,.....");
     });
 
     socket.on('eraser', function(_erdata) {
         mouseData.eraser_flag = _erdata.eraser_flag;
         $('canvas').removeClass('pen');
         $('canvas').addClass('eraser');
-        console.log("eraser,.....");
     });
 
 
@@ -228,37 +232,38 @@ $(function() {
 
     socket.on('Draw', function(_data) {
         var data = _data;
-        if(data.eraser_flag)
-        {
-          ctx.clearRect(data.mouse_x, data.mouse_y, 20, 20);
+        if (data.eraser_flag) {
+            ctx.clearRect(data.mouse_x, data.mouse_y, 20, 20);
         }
-        else{
-        console.log("mouse move");
-        console.log(data.mouse_x)
-        ctx.lineTo(data.mouse_x, data.mouse_y);
-        ctx.stroke();
+        else {
+            ctx.lineTo(data.mouse_x, data.mouse_y);
+            ctx.stroke();
         }
-        
+
 
     });
 
     socket.on('sendData', function(_data) {
-        console.log("data");
         data = _data;
-        console.log(data);
+        
         canvas = document.getElementById(_data.target);
+         var ref = canvas.hasAttribute("width");
+        if(!ref)
+           {
+                $(canvas).attr("width", C_width);
+                $(canvas).attr("height", C_height);
+            }
+        
         ctx = canvas.getContext('2d');
         ctx.font = "30px Arial";
         ctx.fillText("Draw", 50, 80);
+       
         if (mouseData.eraser_flag) {
 
-        } else {
+        }
+        else {
             ctx.beginPath();
             ctx.moveTo(data.mouse_x, data.mouse_y);
-            //mouseData.down_flag=false;
-
-            /* Mouse Capturing Work */
-
             ctx.lineWidth = 3;
             ctx.lineJoin = 'round';
             ctx.lineCap = 'round';
