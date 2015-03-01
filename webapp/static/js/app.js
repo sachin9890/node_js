@@ -20,8 +20,8 @@ $(function() {
     console.log(socket);
 
     flip_book.turn({
-        width: w - 160,
-        height: h - 80,
+        width: w - (w/10),
+        height: h - (h/8),
         autoCenter: true,
         when: {
             turned: function(event, page, pageObj) {
@@ -78,7 +78,7 @@ $(function() {
                 mouse_x: e.layerX,
                 mouse_y: e.layerY,
                 target: e.target.id,
-                eraser_flag: true
+                eraser_flag: true,
             }
         } else {
             mouseData = {
@@ -112,7 +112,7 @@ $(function() {
 
     var onPaint = function() {
         if (mouseData.eraser_flag) {
-            ctx.clearRect(data.mouse_x, data.mouse_y, 20, 20);
+            ctx.clearRect(data.mouse_x, data.mouse_y, 32, 32);
             socket.emit('Draw', data);
         } else {
             console.log("mouse move");
@@ -160,21 +160,39 @@ $(function() {
         flip_book.turn("disable", true);
     });
 
+     $("#pen").on('click', function() {
+        mouseData.eraser_flag = false;
+        $('canvas').removeClass('eraser');
+        $('canvas').addClass('pen');
+        socket.emit('pen', mouseData);
+    });
+
     $("#eraser").on('click', function() {
         mouseData.eraser_flag = true;
+        $('canvas').removeClass('pen');
+        $('canvas').addClass('eraser');
         socket.emit('eraser', mouseData);
     });
 
     $('#clr').on('blur', function() {
         color = "#" + $(this).val();
-
         socket.emit('ChangeColor', color);
 
     });
 
+
+    socket.on('pen', function(_erdata) {
+        mouseData.eraser_flag = _erdata.eraser_flag;
+        $('canvas').removeClass('eraser');
+        $('canvas').addClass('pen');
+        console.log("pen,.....");
+    });
+
     socket.on('eraser', function(_erdata) {
         mouseData.eraser_flag = _erdata.eraser_flag;
-        console.log("eraser,.....")
+        $('canvas').removeClass('pen');
+        $('canvas').addClass('eraser');
+        console.log("eraser,.....");
     });
 
 

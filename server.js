@@ -1,11 +1,5 @@
 var express = require('express');
-//var fs = require('fs');
-//var path = require('path');
-//var url = require('url');
-//var bodyParser = require('body-parser')
 var app = express();
-//app.use(bodyParser());
-
 
 var server = app.listen(3000);
 console.log('Listening on port 3000...');
@@ -62,5 +56,9 @@ io.on('connection', function(socket) {
 
     socket.on("eraser", function(data) {
         socket.broadcast.emit('eraser', data);
+    });
+
+    socket.on("pen", function(data) {
+        socket.broadcast.emit('pen', data);
     });
 });
